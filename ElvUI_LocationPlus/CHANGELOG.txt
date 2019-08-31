@@ -1,2 +1,2 @@
 [b]1.00[/b]
-*Initial release
+*Initial release for WoW Classic
