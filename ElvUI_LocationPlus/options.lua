@@ -164,6 +164,7 @@ function LP:AddOptions()
 						order = 5,
 						name = OTHER,
 						type = 'select',
+						disabled = true,
 						desc = L["Show additional info in the Location Panel."],
 							values = {
 								['NONE'] = L['None'],
@@ -175,7 +176,8 @@ function LP:AddOptions()
 						order = 6,
 						name = EMBLEM_SYMBOL,
 						type = 'toggle',
-						disabled = function() return E.db.locplus.displayOther == 'NONE' end,					
+						disabled = true,
+						--disabled = function() return E.db.locplus.displayOther == 'NONE' end,					
 					},					
 					mouseover = {
 						order = 7,
@@ -201,7 +203,8 @@ function LP:AddOptions()
 				type = "group",
 				name = L["Tooltip"],
 				get = function(info) return E.db.locplus[ info[#info] ] end,
-				set = function(info, value) E.db.locplus[ info[#info] ] = value; end,	
+				set = function(info, value) E.db.locplus[ info[#info] ] = value; end,
+				disabled = true,
 				args = {
 					tt_grp = {
 						order = 1,
