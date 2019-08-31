@@ -525,7 +525,7 @@ function LP:Initialize()
 	EP:RegisterPlugin(addon, LP.AddOptions)
 
 	if E.db.locplus.LoginMsg then
-		print(L["Location Plus "]..format("v|cff33ffff%s|r",LP.version)..L[" is loaded. Thank you for using it."])
+		print(L["Location Plus Classic "]..format("v|cff33ffff%s|r",LP.version)..L[" is loaded. Thank you for using it."])
 	end
 end
 
