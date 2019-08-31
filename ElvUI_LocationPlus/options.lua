@@ -62,9 +62,9 @@ P['locplus'] = {
 	['LoginMsg'] = true,
 }
 
-local FISH_ICON = "|TInterface\\AddOns\\ElvUI_LocPlus\\media\\fish.tga:14:14|t"
-local PET_ICON = "|TInterface\\AddOns\\ElvUI_LocPlus\\media\\pet.tga:14:14|t"
-local LEVEL_ICON = "|TInterface\\AddOns\\ElvUI_LocPlus\\media\\levelup.tga:14:14|t"
+local FISH_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\fish.tga:14:14|t"
+local PET_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\pet.tga:14:14|t"
+local LEVEL_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\levelup.tga:14:14|t"
 
 function LP:AddOptions()
 	E.Options.args.locplus = {
@@ -168,7 +168,6 @@ function LP:AddOptions()
 							values = {
 								['NONE'] = L['None'],
 								['RLEVEL'] = LEVEL_ICON.." "..LEVEL_RANGE,
-								['PET'] = PET_ICON.." "..L['Battle Pet Level'],
 								['PFISH'] = FISH_ICON.." "..PROFESSIONS_FISHING,
 							},			
 					},
@@ -256,13 +255,6 @@ function LP:AddOptions()
 								order = 3,
 								name = L["Area Fishing level"],
 								desc = L["Enable/Disable fishing level on the area."],
-								type = 'toggle',
-								disabled = function() return not E.db.locplus.tt end,			
-							},
-							petlevel = {
-								order = 4,
-								name = L["Battle Pet level"],
-								desc = L["Enable/Disable battle pet level on the area."],
 								type = 'toggle',
 								disabled = function() return not E.db.locplus.tt end,			
 							},

@@ -1,19 +1,3 @@
---[[
--- ElvUI Location Plus --
-a plugin for ElvUI, that adds player location and coords + 2 Datatexts
-
-- Info, requests, bugs: https://www.tukui.org/addons.php?id=6
-----------------------------------------------------------------------------------
-- Credits:
-	-Elv, Blazeflack, for showing me the best way to do this
-	-Sinaris(idea from his TukUI edit)
-	-iceeagle, grdn, for digging their great code and making this possible.
-	-Tukui and Elvui forum community.
-----------------------------------------------------------------------------------
-- ToDo:
-
-]]--
-
 local E, L, V, P, G = unpack(ElvUI);
 local LP = E:NewModule('LocationPlus', 'AceTimer-3.0', 'AceEvent-3.0');
 local DT = E:GetModule('DataTexts');
@@ -40,7 +24,7 @@ local SANCTUARY_TERRITORY, ARENA, FRIENDLY, HOSTILE, CONTESTED_TERRITORY, COMBAT
 
 -- GLOBALS: LocationPlusPanel, LeftCoordDtPanel, RightCoordDtPanel, XCoordsPanel, YCoordsPanel, CUSTOM_CLASS_COLORS
 
-LP.version = GetAddOnMetadata("ElvUI_LocPlus", "Version")
+LP.version = GetAddOnMetadata("ElvUI_LocationPlus", "Version")
 if E.db.locplus == nil then E.db.locplus = {} end
 
 local classColor = E.myclass == 'PRIEST' and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass])
@@ -72,7 +56,7 @@ local function LocPanel_OnEnter(self)
 	if InCombatLockdown() and E.db.locplus.ttcombathide then
 		GameTooltip:Hide()
 	else
-		LP:UpdateTooltip()
+		--LP:UpdateTooltip()
 	end
 
 	if E.db.locplus.mouseover then
@@ -204,8 +188,6 @@ local function CreateLocationPanel()
 
 	loc_panel:RegisterEvent("PLAYER_REGEN_DISABLED")
 	loc_panel:RegisterEvent("PLAYER_REGEN_ENABLED")
-	loc_panel:RegisterEvent("PET_BATTLE_CLOSE")
-	loc_panel:RegisterEvent("PET_BATTLE_OPENING_START")
 
 	-- Mover
 	E:CreateMover(LocationPlusPanel, "LocationMover", L["LocationPlus "])
@@ -372,16 +354,11 @@ function LP:UpdateLocation()
 		displayLine = subZoneText
 	end
 
-	-- Show Other (Level, Battle Pet Level, Fishing)
+	--[[ Show Other (Level, Battle Pet Level, Fishing)
 	if E.db.locplus.displayOther == 'RLEVEL' then
 		local displaylvl = LP:GetLevelRange(zoneText) or ""
 		if displaylvl ~= "" then
 			displayLine = displayLine..displaylvl
-		end
-	elseif E.db.locplus.displayOther == 'PET' then
-		local displaypet = LP:GetBattlePetLvl(zoneText) or ""
-		if displaypet ~= "" then
-			displayLine = displayLine..displaypet
 		end
 	elseif E.db.locplus.displayOther == 'PFISH' then
 		local displayfish = LP:GetFishingLvl(true) or ""
@@ -390,7 +367,7 @@ function LP:UpdateLocation()
 		end
 	else
 		displayLine = displayLine
-	end
+	end]]
 
 	LocationPlusPanel.Text:SetText(displayLine)
 

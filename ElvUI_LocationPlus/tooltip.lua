@@ -1,6 +1,6 @@
 local E, L, V, P, G = unpack(ElvUI);
 local LP = E:GetModule('LocationPlus')
-local T = LibStub('LibTourist-3.0');
+--local T = LibStub('LibTourist-3.0');
 
 local format, tonumber, pairs, tinsert = string.format, tonumber, pairs, table.insert
 
@@ -313,34 +313,6 @@ function LP:GetLevelRange(zoneText, ontt)
 	return dlevel or ""
 end
 
--- PetBattle Range
-function LP:GetBattlePetLvl(zoneText, ontt)
-	local mapID = C_Map_GetBestMapForUnit("player")
-	local zoneText = T:GetMapNameByIDAlt(mapID) or UNKNOWN;
-	local uniqueZone = T:GetUniqueZoneNameForLookup(zoneText, continentID)
-	local low,high = T:GetBattlePetLevel(uniqueZone)
-	local plevel
-	if low ~= nil or high ~= nil then
-		if low ~= high then
-			plevel = format("%d-%d", low, high)
-		else
-			plevel = format("%d", high)
-		end
-
-		if ontt then
-			return plevel
-		else
-			if E.db.locplus.showicon then
-				plevel = format(" (%s) ", plevel)..PET_ICON
-			else
-				plevel = format(" (%s) ", plevel)
-			end
-		end
-	end
-
-	return plevel or ""
-end
-
 function LP:UpdateTooltip()
 	local mapID = C_Map_GetBestMapForUnit("player")
 	local zoneText = T:GetMapNameByIDAlt(mapID) or UNKNOWN;
@@ -375,14 +347,6 @@ function LP:UpdateTooltip()
 		local checkfish = LP:GetFishingLvl(true, true)
 		if checkfish ~= "" then
 			GameTooltip:AddDoubleLine(PROFESSIONS_FISHING.." : ", checkfish, 1, 1, 1)
-		end
-	end
-
-	-- Battle Pet Levels
-	if E.db.locplus.petlevel then
-		local checkbpet = LP:GetBattlePetLvl(zoneText, true)
-		if checkbpet ~= "" then
-			GameTooltip:AddDoubleLine(L["Battle Pet level"].. " :", checkbpet, 1, 1, 1, selectioncolor)
 		end
 	end
 
