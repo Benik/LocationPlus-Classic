@@ -70,7 +70,7 @@ function LP:AddOptions()
 	E.Options.args.locplus = {
 		order = 9000,
 		type = 'group',
-		name = L["Location Plus"],
+		name = L["Location Plus Classic"],
 		args = {
 			name = {
 				order = 1,
