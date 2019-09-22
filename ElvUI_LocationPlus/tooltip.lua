@@ -1,13 +1,13 @@
 local E, L, V, P, G = unpack(ElvUI);
 local LP = E:GetModule('LocationPlus')
---local T = LibStub('LibTourist-3.0');
+local T = LibStub('LibTouristClassic-1.0');
 
 local format, tonumber, pairs, tinsert = string.format, tonumber, pairs, table.insert
 
 local GetBindLocation = GetBindLocation
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local GetCurrencyInfo, GetCurrencyListSize = GetCurrencyInfo, GetCurrencyListSize
-local GetProfessionInfo, GetProfessions = GetProfessionInfo, GetProfessions
+--local GetProfessionInfo, GetProfessions = GetProfessionInfo, GetProfessions
 local UnitLevel = UnitLevel
 local GameTooltip = _G['GameTooltip']
 
@@ -81,19 +81,19 @@ local currency = {
 	--1533,	-- Wakening Essence
 
 	-- BfA
-	1560, 	-- War Resources
-	1565,	-- Rich Azerite Fragment
-	1580,	-- Seal of Wartorn Fate
-	1587,	-- War Supplies
-	1710,	-- Seafarer's Dubloon
-	1718,	-- Titan Residuum
-	1721,	-- Prismatic Manapearl
+	--1560, 	-- War Resources
+	--1565,	-- Rich Azerite Fragment
+	--1580,	-- Seal of Wartorn Fate
+	--1587,	-- War Supplies
+	--1710,	-- Seafarer's Dubloon
+	--1718,	-- Titan Residuum
+	--1721,	-- Prismatic Manapearl
 }
 
 if E.myfaction == 'Alliance' then
-	tinsert(currency, 1717)
+	--tinsert(currency, 1717)
 elseif E.myfaction == 'Horde' then
-	tinsert(currency, 1716)
+	--tinsert(currency, 1716)
 end
 
 -----------------------
@@ -129,7 +129,7 @@ end
 	isPvP = nil;
 	isRaid = nil;
 
-	if(T:IsArena(zone) or T:IsBattleground(zone)) then
+	if(T:IsBattleground(zone)) then
 		if E.db.locplus.tthidepvp then
 			return;
 		end
@@ -247,20 +247,45 @@ function LP:GetStatus(color)
 	end
 end
 
+--local profLookup = {'Alchemie', 'Ingenieurskunst', 'Lederverarbeitung', 'Schmiedekunst', 'Schneiderei', 'Verzauberkunst', 'Kräuterkunde', 'Kürschnerei', 'Bergbau', 'Angeln', 'Kochkunst', 'Erste Hilfe'}
+local profLookup = {PROFESSIONS_COOKING, PROFESSIONS_FIRST_AID, PROFESSIONS_FISHING}
+local function GetProfessions(fishing)
+    local numSkills = GetNumSkillLines()
+    if fishing then
+        for i = 1, numSkills do
+            local skillName, isHeader, _, skillRank = GetSkillLineInfo(i)
+            if not isHeader and skillName == PROFESSIONS_FISHING then
+--                print("Name1: ", skillName, " - index: ", i)
+                return skillRank
+            end
+        end
+        return nil
+    else
+        local profs = {}
+        for i = 1, numSkills do
+            local skillName, isHeader, _, skillRank, _, skillModifier, skillMaxRank, isAbandonable = GetSkillLineInfo(i)
+            if not isHeader and (isAbandonable or tContains(profLookup, skillName)) then --(skillName == PROFESSIONS_COOKING or skillName == PROFESSIONS_FIRST_AID or skillName == PROFESSIONS_FISHING)) then
+--                print("Name2: ", skillName)
+                profs[i] = {name = skillName, rank = skillRank, max = skillMaxRank, modi = skillModifier}
+            end
+        end
+        
+        return profs
+    end
+end
+        
 -- Get Fishing Level
 function LP:GetFishingLvl(minFish, ontt)
 	local mapID = C_Map_GetBestMapForUnit("player")
-	local zoneText = T:GetMapNameByIDAlt(mapID) or UNKNOWN;
-	local uniqueZone = T:GetUniqueZoneNameForLookup(zoneText, continentID)
-	local minFish = T:GetFishingLevel(uniqueZone)
-	local _, _, _, fishing = GetProfessions()
+	local minFish = T:GetFishingLevel(mapID)
 	local r, g, b = 1, 0, 0
 	local r1, g1, b1 = 1, 0, 0
 	local dfish
 	
 	if minFish then
-		if fishing ~= nil then
-			local _, _, rank = GetProfessionInfo(fishing)
+		local rank = GetProfessions(true) --deathcore - index 9 ist angeln, immer???
+        
+        if rank ~= nil then
 			if minFish < rank then
 				r, g, b = 0, 1, 0
 				r1, g1, b1 = 0, 1, 0
@@ -317,6 +342,7 @@ function LP:UpdateTooltip()
 	local mapID = C_Map_GetBestMapForUnit("player")
 	local zoneText = T:GetMapNameByIDAlt(mapID) or UNKNOWN;
 	local curPos = (zoneText.." ") or "";
+    local HOME = GetItemInfo(6948) or 'Home'
 
 	GameTooltip:ClearLines()
 
@@ -375,14 +401,14 @@ function LP:UpdateTooltip()
 	if E.db.locplus.ttrecinst and T:HasRecommendedInstances() and level >= 15 then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L["Recommended Dungeons :"], selectioncolor)
-			
 		for dungeon in T:IterateRecommendedInstances() do
 			GetRecomDungeons(dungeon);
 		end
 	end
 
 	-- Currency
-	local numEntries = GetCurrencyListSize() -- Check for entries to disable the tooltip title when no currency
+	--[[
+    local numEntries = GetCurrencyListSize() -- Check for entries to disable the tooltip title when no currency
 	if E.db.locplus.curr and numEntries > 0 then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(TOKENS.." :", selectioncolor)
@@ -399,28 +425,28 @@ function LP:UpdateTooltip()
 				end
 			end
 		end
-	end
+	end]]
 
 	-- Professions
-	local prof1, prof2, archy, fishing, cooking, firstAid = GetProfessions()
-	if E.db.locplus.prof and (prof1 or prof2 or archy or fishing or cooking or firstAid) then	
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(TRADE_SKILLS.." :", selectioncolor)
-		
-		local proftable = { GetProfessions() }
-		for _, id in pairs(proftable) do
-			local name, icon, rank, maxRank, _, _, _, rankModifier = GetProfessionInfo(id)
-
-			if rank < maxRank or (not E.db.locplus.profcap) then
-				icon = ("|T%s:12:12:1:0|t"):format(icon)
-				if (rankModifier and rankModifier > 0) then
-					GameTooltip:AddDoubleLine(format("%s %s :", icon, name), (format("%s |cFF6b8df4+ %s|r / %s", rank, rankModifier, maxRank)), 1, 1, 1, selectioncolor)				
-				else
-					GameTooltip:AddDoubleLine(format("%s %s :", icon, name), (format("%s / %s", rank, maxRank)), 1, 1, 1, selectioncolor)
-				end
-			end
-		end
-	end
+	if E.db.locplus.prof then
+        local p = GetProfessions()
+        if p then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine(TRADE_SKILLS.." :", selectioncolor)
+        
+            for k, v in pairs(p) do
+                local name, rank, maxRank, rankModifier = v.name, v.rank, v.max, v.modi
+--                print(v.name)
+                if rank < maxRank or (not E.db.locplus.profcap) then
+                    if (rankModifier and rankModifier > 0) then
+                        GameTooltip:AddDoubleLine(format("%s :", name), (format("%s |cFF6b8df4+ %s|r / %s", rank, rankModifier, maxRank)), 1, 1, 1, selectioncolor)				
+                    else
+                        GameTooltip:AddDoubleLine(format("%s :", name), (format("%s / %s", rank, maxRank)), 1, 1, 1, selectioncolor)
+                    end
+                end
+            end
+        end
+    end
 
 	-- Hints
 	if E.db.locplus.tt then

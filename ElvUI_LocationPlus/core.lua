@@ -56,7 +56,7 @@ local function LocPanel_OnEnter(self)
 	if InCombatLockdown() and E.db.locplus.ttcombathide then
 		GameTooltip:Hide()
 	else
-		--LP:UpdateTooltip()
+		LP:UpdateTooltip()
 	end
 
 	if E.db.locplus.mouseover then
@@ -161,17 +161,7 @@ local function CreateLocationPanel()
 
 	-- Hide in combat/Pet battle
 	loc_panel:SetScript("OnEvent",function(self, event)
-		if event == "PET_BATTLE_OPENING_START" then
-			UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
-			self.fadeInfo.finishedFunc = LocPanelOnFade
-		elseif event == "PET_BATTLE_CLOSE" then
-			if E.db.locplus.mouseover then
-				UIFrameFadeIn(self, 0.2, self:GetAlpha(), E.db.locplus.malpha)
-			else
-				UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
-			end
-			self:Show()
-		elseif E.db.locplus.combat then
+		if E.db.locplus.combat then
 			if event == "PLAYER_REGEN_DISABLED" then
 				UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
 				self.fadeInfo.finishedFunc = LocPanelOnFade
@@ -359,15 +349,15 @@ function LP:UpdateLocation()
 		local displaylvl = LP:GetLevelRange(zoneText) or ""
 		if displaylvl ~= "" then
 			displayLine = displayLine..displaylvl
-		end
-	elseif E.db.locplus.displayOther == 'PFISH' then
+		end]]
+	if E.db.locplus.displayOther == 'PFISH' then
 		local displayfish = LP:GetFishingLvl(true) or ""
 		if displayfish ~= "" then
 			displayLine = displayLine..displayfish
 		end
 	else
 		displayLine = displayLine
-	end]]
+	end
 
 	LocationPlusPanel.Text:SetText(displayLine)
 
