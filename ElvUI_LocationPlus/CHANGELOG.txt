@@ -1,2 +1,6 @@
+[b]1.01[/b]
+*LibTourist updated for Classic
+*Tooltip re enabled. Credit: deathcore001
+
 [b]1.00[/b]
 *Initial release for WoW Classic
