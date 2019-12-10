@@ -1,4 +1,4 @@
-﻿## Interface: 11302
+﻿## Interface: 11303
 ## Author: Benik
 ## Version: 1.01
 ## Title: |cff1784d1ElvUI|r Location Plus Classic
