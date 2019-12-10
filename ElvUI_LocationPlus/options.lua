@@ -13,7 +13,6 @@ P['locplus'] = {
 	['both'] = true,
 	['combat'] = false,
 	['timer'] = 0.5,
-	['dig'] = true,
 	['displayOther'] = "RLEVEL",
 	['showicon'] = true,
 	['hidecoords'] = false,
@@ -31,7 +30,6 @@ P['locplus'] = {
 	['ttreczones'] = true,
 	['ttrecinst'] = true,
 	['ttcoords'] = true,
-	['curr'] = true,
 	['prof'] = true,
 	['profcap'] = false,
 -- Filters
@@ -152,13 +150,6 @@ function LP:AddOptions()
 						type = 'toggle',
 						disabled = function() return E.db.locplus.hidecoords end,
 						set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:HideCoords() end,					
-					},
-					dig = {
-						order = 4,
-						name = L["Detailed Coords"],
-						desc = L["Adds 2 digits in the coords"],
-						type = 'toggle',
-						set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:CoordsDigit() end,					
 					},
 					displayOther = {
 						order = 5,
@@ -301,23 +292,15 @@ function LP:AddOptions()
 								width = "full",
 								name = "",
 							},	
-							--[[curr = {
-								order = 11,
-								name = CURRENCY,
-								desc = L["Enable/Disable the currencies, on Tooltip."],
-								type = 'toggle',
-								width = "full",
-								disabled = function() return not E.db.locplus.tt end,			
-							},]]
 							prof = {
-								order = 12,
+								order = 11,
 								name = TRADE_SKILLS,
 								desc = L["Enable/Disable the professions, on Tooltip."],
 								type = 'toggle',
 								disabled = function() return not E.db.locplus.tt end,			
 							},
 							profcap = {
-								order = 13,
+								order = 12,
 								name = L["Hide capped"],
 								desc = L["Hides a profession when the player reaches its highest level."],
 								type = 'toggle',
@@ -486,14 +469,6 @@ function LP:AddOptions()
 									t.r, t.g, t.b = r, g, b
 									LP:CoordsColor() 
 								end,
-							},
-							dig = {
-								order = 3,
-								name = L["Detailed Coords"],
-								desc = L["Adds 2 digits in the coords"],
-								type = 'toggle',
-								get = function(info) return E.db.locplus[ info[#info] ] end,
-								set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:CoordsDigit() end,					
 							},
 						},
 					},

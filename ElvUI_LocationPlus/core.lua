@@ -29,7 +29,7 @@ if E.db.locplus == nil then E.db.locplus = {} end
 
 local classColor = E.myclass == 'PRIEST' and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass])
 
-local COORDS_WIDTH = 30 -- Coord panels width
+local COORDS_WIDTH = 50 -- Coord panels width
 local SPACING = 1 		-- Panel spacing
 
 local left_dtp = CreateFrame('Frame', 'LeftCoordDtPanel', E.UIParent)
@@ -79,24 +79,7 @@ end
 
 -- Coords Creation
 local function CreateCoords()
-	local mapID = C_Map_GetBestMapForUnit("player")
-	local mapPos = mapID and C_Map_GetPlayerMapPosition(mapID, "player")
-	local x, y = 0, 0
-
-	if mapPos then
-		x, y = mapPos:GetXY()
-	end
-
-	local dig
-
-	if E.db.locplus.dig then
-		dig = 2
-	else
-		dig = 0
-	end
-
-	x = (mapPos and x) and E:Round(100 * x, dig) or 0
-	y = (mapPos and y) and E:Round(100 * y, dig) or 0
+	local x, y = E.MapInfo.xText or 0, E.MapInfo.yText or 0
 
 	return x, y
 end
@@ -398,7 +381,6 @@ function LP:UpdateCoords()
 	if (x == 0 or x == nil) and (y == 0 or y == nil) then
 		XCoordsPanel.Text:SetText("-")
 		YCoordsPanel.Text:SetText("-")
-
 	else
 		if x < 10 then
 			xt = "0"..x
@@ -413,17 +395,6 @@ function LP:UpdateCoords()
 		end
 		XCoordsPanel.Text:SetText(xt)
 		YCoordsPanel.Text:SetText(yt)
-	end
-end
-
--- Coord panels width
-function LP:CoordsDigit()
-	if E.db.locplus.dig then
-		XCoordsPanel:Width(COORDS_WIDTH*1.5)
-		YCoordsPanel:Width(COORDS_WIDTH*1.5)
-	else
-		XCoordsPanel:Width(COORDS_WIDTH)
-		YCoordsPanel:Width(COORDS_WIDTH)
 	end
 end
 
@@ -462,7 +433,6 @@ function LP:Update()
 	self:ShadowPanels()
 	self:DTHeight()
 	HideDT()
-	self:CoordsDigit()
 	self:MouseOver()
 	self:HideCoords()
 end
