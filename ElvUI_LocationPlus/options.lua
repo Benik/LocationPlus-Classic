@@ -204,7 +204,6 @@ function LP:AddOptions()
 				name = L["Tooltip"],
 				get = function(info) return E.db.locplus[ info[#info] ] end,
 				set = function(info, value) E.db.locplus[ info[#info] ] = value; end,
-				disabled = true,
 				args = {
 					tt_grp = {
 						order = 1,
@@ -302,14 +301,14 @@ function LP:AddOptions()
 								width = "full",
 								name = "",
 							},	
-							curr = {
+							--[[curr = {
 								order = 11,
 								name = CURRENCY,
 								desc = L["Enable/Disable the currencies, on Tooltip."],
 								type = 'toggle',
 								width = "full",
 								disabled = function() return not E.db.locplus.tt end,			
-							},
+							},]]
 							prof = {
 								order = 12,
 								name = TRADE_SKILLS,
