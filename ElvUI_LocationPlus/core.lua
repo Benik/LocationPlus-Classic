@@ -17,7 +17,7 @@ local GetZonePVPInfo = GetZonePVPInfo
 local IsInInstance, InCombatLockdown = IsInInstance, InCombatLockdown
 local UIFrameFadeIn, UIFrameFadeOut, ToggleFrame = UIFrameFadeIn, UIFrameFadeOut, ToggleFrame
 local IsControlKeyDown, IsShiftKeyDown = IsControlKeyDown, IsShiftKeyDown
-local GameTooltip, WorldMapFrame = _G['GameTooltip'], _G['WorldMapFrame']
+local GameTooltip = _G['GameTooltip']
 
 local UNKNOWN = UNKNOWN
 local SANCTUARY_TERRITORY, ARENA, FRIENDLY, HOSTILE, CONTESTED_TERRITORY, COMBAT, AGGRO_WARNING_IN_INSTANCE = SANCTUARY_TERRITORY, ARENA, FRIENDLY, HOSTILE, CONTESTED_TERRITORY, COMBAT, AGGRO_WARNING_IN_INSTANCE
@@ -124,7 +124,7 @@ local function LocPanel_OnClick(self, btn)
 				ToggleFrame(LeftCoordDtPanel)
 				ToggleFrame(RightCoordDtPanel)
 			else
-				ToggleFrame(WorldMapFrame)
+				ToggleWorldMap()
 			end
 		end
 	end
