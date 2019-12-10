@@ -1,3 +1,10 @@
+[b]1.02 - Dec 10 2019[/b]
+*Fix a WorldMap frame glitch. Credit: Crum
+*Re enable Tooltip options. Should have done it before, no one cared :P
+*Fixed Coords creation by not using Blizz api that has a mem leak.
+*toc update for the new patch
+*LibTourist update to alpha4
+
 [b]1.01[/b]
 *LibTourist updated for Classic
 *Tooltip re enabled. Credit: deathcore001

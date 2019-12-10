@@ -1,6 +1,6 @@
 ﻿## Interface: 11303
 ## Author: Benik
-## Version: 1.01
+## Version: 1.02
 ## Title: |cff1784d1ElvUI|r Location Plus Classic
 ## Notes: a plugin for ElvUI Classic, that adds location, coords, 2 Datatexts and a tooltip full of info.
 ## RequiredDeps: ElvUI
