@@ -79,7 +79,7 @@ end
 
 -- Coords Creation
 local function CreateCoords()
-	local x, y = E.MapInfo.x or 0, E.MapInfo.y or 0
+	local x, y = E.MapInfo.x, E.MapInfo.y
 
 	local dig
 
