@@ -1,6 +1,6 @@
 --[[
 Name: LibTouristClassic-1.0
-Revision: $Rev: 229 $
+Revision: $Rev: 235 $
 Author(s): Mishikal1 (Classic), Odica (maintainer), based on LibTourist-3.0, originally created by ckknight and Arrowmaster
 Documentation: https://www.wowace.com/projects/libtourist-1-0/pages/api-reference
 Git: https://repos.wowace.com/wow/libtourist-classic libtourist-classic
@@ -9,7 +9,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibTouristClassic-1.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 229 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 235 $"):match("(%d+)"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 local C_Map = C_Map
@@ -17,6 +17,9 @@ local Tourist, oldLib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not Tourist then
 	return
 end
+
+local addonName, addonData = ...
+
 if oldLib then
 	oldLib = {}
 	for k, v in pairs(Tourist) do
@@ -127,6 +130,33 @@ local gatheringFlightnodes = false
 local flightnodeDataGathered = false
 
 local COSMIC_MAP_ID = 947
+
+
+local flightNodeIgnoreList = {
+	[57] = "Fishing Village, Teldrassil",
+	[54] = "Transport, Feathermoon - Feralas",
+	[35] = "Transport, Orgrimmar Zepplins",
+	[34] = "Transport, Booty Bay - Ratchet",
+	[87] = "Crown Guard Tower, Eastern Plaguelands",
+	[86] = "Eastwall Tower, Eastern Plaguelands",
+	[85] = "Northpass Tower, Eastern Plaguelands",
+	[84] = "Plaguewood Tower, Eastern Plaguelands",
+	[78] = "Naxxramas",
+	[51] = "Transport, Rut'theran - Auberdine",
+	[50] = "Transport, Menethil Ships",
+	[47] = "Transport, Grom'gol - Orgrimmar",
+	[46] = "Southshore Ferry, Hillsbrad",
+	[36] = "Generic, World target",
+	[24] = "Generic, World target for Zeppelin Paths",
+	[15] = "Eastern Plaguelands",
+	[9] = "Booty Bay, Stranglethorn",
+	[3] = "Programmer Isle",
+	[1] = "Northshire Abbey",
+	[59] = "Dun Baldar, Alterac Valley",
+	[60] = "Frostwolf Keep, Alterac Valley",
+}
+
+
 --------------------------------------------------------------------------------------------------------
 --                                            Localization                                            --
 --------------------------------------------------------------------------------------------------------
@@ -391,7 +421,7 @@ end
 ]]--
 
 local function GatherFlightnodeData()
-	local zMapID, zName, nodes
+	local zMapID, zName, nodes, numNodes
 	local count = 0
 	local errCount = 0
 	if gatheringFlightnodes == true then return end
@@ -412,7 +442,7 @@ local function GatherFlightnodeData()
 			if numNodes > 0 then
 				for i, node in ipairs(nodes) do
 					if not FlightnodeLookupTable[node.nodeID] then
-						if not missingNodes[node.nodeID] then
+						if not missingNodes[node.nodeID] and not flightNodeIgnoreList[node.nodeID] then
 							trace("|r|cffff4422! -- Tourist: Missing flightnode in lookup: "..tostring(node.nodeID).." = "..tostring(node.name))
 							errCount = errCount + 1
 							missingNodes[node.nodeID] = node.name
@@ -923,6 +953,82 @@ function Tourist:GetFactionColor(zone)
 end
 
 
+-- Returns for the specified herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:GetHerb(herbItemID)
+	return addonData.LibTouristClassic.herbs[herbItemID]
+end
+
+-- Returns for the specified mining node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:GetMiningNode(nodeObjectID)
+	-- Some mining nodes have different IDs, i.e. because they drop different secondary items.
+	-- LibTourist only uses the most common nodeType; use the mapping table to find it
+	nodeObjectID = addonData.LibTouristClassic.miningNodeIDMapping[nodeObjectID] or nodeObjectID
+	return addonData.LibTouristClassic.miningNodes[nodeObjectID]
+end
+
+-- Returns an r, g and b value indicating the gathering difficulty of the specified herb
+function Tourist:GetHerbSkillColor(herbItemID, currentSkill)
+	local herb = Tourist:GetHerb(herbItemID)
+	if herb then
+		return Tourist:GetGatheringSkillColor(herb.minLevel, currentSkill)
+	else
+		-- White
+		return 1, 1, 1
+	end
+end
+
+-- Returns an r, g and b value indicating the mining difficulty of the specified mining node
+function Tourist:GetMiningSkillColor(nodeObjectID, currentSkill)
+	local node = Tourist:GetMiningNode(nodeObjectID)
+	if node then
+		return Tourist:GetGatheringSkillColor(node.minLevel, currentSkill)
+	else
+		-- White
+		return 1, 1, 1
+	end
+end
+
+-- Returns an r, g and b value indicating the gathering difficulty for the specified node level
+function Tourist:GetGatheringSkillColor(minLevel, currentSkill)
+	local lvl1Corr = 0
+	if minLevel == 1 then 
+		lvl1Corr = -1
+	end
+	
+	if currentSkill < minLevel then
+		-- Red
+		return 1, 0, 0	
+	elseif currentSkill < minLevel + 25 + lvl1Corr then
+		-- Orange
+		return 1, 0.7, 0	
+	elseif currentSkill < minLevel + 50 + lvl1Corr then
+		-- Yellow
+		return 1, 1, 0	
+	elseif currentSkill < minLevel + 100 + lvl1Corr then
+		-- Green
+		return 0, 1, 0	
+	else
+		-- Gray
+		return 0.5, 0.5, 0.5
+	end
+end
+
+
+
+
+
+local t = {}
+
 local function retNil()
 	return nil
 end
@@ -974,7 +1080,6 @@ local function mysort(a,b)
 		return a < b
 	end
 end
-local t = {}
 local function myiter(t)
 	local n = t.n
 	n = n + 1
@@ -987,6 +1092,180 @@ local function myiter(t)
 		t.n = nil
 	end
 end
+
+-- Herbs -------------------------
+
+local function herbSorter(a, b)
+	return a.minLevel < b.minLevel
+end
+
+-- Iterates through all standard herbs, returning for each herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:IterateHerbs()
+	local herbs = addonData.LibTouristClassic.herbs
+
+	if not herbs then
+		return retNil
+	else
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(herbs) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, herbSorter)
+		t.n = 0
+		return myiter, t, nil
+	end
+end
+
+-- Iterates through all standard herbs within the specified zone, returning for each herb:
+--  - name
+--  - itemID
+--  - minLevel
+--  - numNodes
+function Tourist:IterateHerbsByZone(mapID)
+	local herbs = addonData.LibTouristClassic.herbsByZone[mapID]
+
+	if not herbs then
+		return retNil
+	elseif type(herbs) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(herbs) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, herbSorter)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, herbs, nil
+	end
+end
+
+-- Iterates through the mapIDs of the zones in which the specified herb can be found
+function Tourist:IterateZonesByHerb(herbItemID)
+	local herb, zones
+	herb = Tourist:GetHerb(herbItemID)
+	if herb then zones = herb.zones end
+
+	if not zones then
+		return retNil
+	elseif type(zones) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(zones) do
+			t[#t+1] = k
+		end
+		table.sort(t, mysort)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, zones, nil
+	end
+end
+
+-- Returns true if there are any standard herb nodes in the zone
+function Tourist:DoesZoneHaveHerbs(zone)
+	local mapID = Tourist:GetZoneMapID(zone) or zone
+	return not not addonData.LibTouristClassic.herbsByZone[mapID]
+end
+
+-- Mining nodes -------------------------
+
+local function miningNodeSorter(a, b)
+	return a.minLevel < b.minLevel
+end
+
+-- Iterates through all standard mining nodes, returning for each node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - zones; table: k = mapID, v = number of nodes in the zone 
+function Tourist:IterateMiningNodes()
+	local miningNodes = addonData.LibTouristClassic.miningNodes
+
+	if not miningNodes then
+		return retNil
+	else
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(miningNodes) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, miningNodeSorter)
+		t.n = 0
+		return myiter, t, nil
+	end
+end
+
+-- Iterates through all standard mining nodes within the specified zone, returning for each node:
+--  - nodeName
+--  - nodeObjectID
+--  - oreName
+--  - oreItemID
+--  - minLevel
+--  - numNodes
+function Tourist:IterateMiningNodesByZone(mapID)
+	local miningNodes = addonData.LibTouristClassic.miningNodesByZone[mapID]
+
+	if not miningNodes then
+		return retNil
+	elseif type(miningNodes) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(miningNodes) do
+			t[#t+1] = v  -- v contains all data including k
+		end
+		table.sort(t, miningNodeSorter)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, miningNodes, nil
+	end
+end
+
+-- Iterates through the mapIDs of the zones in which the specified mining node can be found
+function Tourist:IterateZonesByMiningNode(miningNodeObjectID)
+	local miningNode, zones
+	miningNode = Tourist:GetMiningNode(miningNodeObjectID)
+	if miningNode then zones = miningNode.zones end
+
+	if not zones then
+		return retNil
+	elseif type(zones) == "table" then
+		for k in pairs(t) do
+			t[k] = nil
+		end
+		for k, v in pairs(zones) do
+			t[#t+1] = k
+		end
+		table.sort(t, mysort)
+		t.n = 0
+		return myiter, t, nil
+	else
+		return retOne, zones, nil
+	end
+end
+
+-- Returns true if there are any standard mining nodes in the zone
+function Tourist:DoesZoneHaveMiningNodes(zone)
+	local mapID = Tourist:GetZoneMapID(zone) or zone
+	return not not addonData.LibTouristClassic.miningNodesByZone[mapID]
+end
+
+
+-- Flight nodes -------------------------
+
 local function flightnodesort(a, b)
 	return a.name < b.name
 end
@@ -1510,7 +1789,7 @@ setmetatable(cost, {
 			end
 		end
 
-		if types[x] == "Transport" then
+		if types[vertex] == "Transport" then
 			price = price * 2
 		end
 
@@ -2407,7 +2686,7 @@ do
 		continent = Kalimdor,
 		instances = BZ["Onyxia's Lair"],
 		paths = {
-		--	[BZ["Onyxia's Lair"]] = true, -- NOT IN GAME YET
+			[BZ["Onyxia's Lair"]] = true,
 			[BZ["The Barrens"]] = true,
 			[transports["MENETHIL_THERAMORE_BOAT"]] = true,
 		},
@@ -2876,17 +3155,16 @@ do
 		entrancePortal = { BZ["Ahn'Qiraj: The Fallen Kingdom"], 58.9, 14.3 },
 	}
 
---	zones[BZ["Onyxia's Lair"]] = {
---		low = 60,
---		high = 60,
---		continent = Kalimdor,
---		paths = BZ["Dustwallow Marsh"],
---		groupSize = 10,
---		altGroupSize = 25,
---		type = "Instance",
---		entrancePortal = { BZ["Dustwallow Marsh"], 52, 76 },
---	}
---
+	zones[BZ["Onyxia's Lair"]] = {
+		low = 60,
+		high = 60,
+		continent = Kalimdor,
+		paths = BZ["Dustwallow Marsh"],
+		groupSize = 40,
+		type = "Instance",
+		entrancePortal = { BZ["Dustwallow Marsh"], 52, 76 },
+	}
+
 --	zones[BZ["Naxxramas"]] = {
 --		low = 60,
 --		high = 60,
@@ -2994,7 +3272,7 @@ do
 
 	trace("Tourist: Initializing continents...")
 	local continentNames = Tourist:GetMapContinentsAlt()
-	continentNames[947] = "Azeroth"  -- For the Nazjatar zone, which has Azeroth as parent map
+	continentNames[947] = "Azeroth"
 
 	local counter = 0
 
@@ -3049,7 +3327,7 @@ do
 					zones[zoneName].texture = C_Map.GetMapArtID(continentMapID)
 					-- Get zone player levels
 					minLvl, maxLvl = C_Map.GetMapLevels(zoneMapID)
-					if minLvL and minLvL > 0 then zones[zoneName].low = minLvl end
+					if minLvl and minLvl > 0 then zones[zoneName].low = minLvl end
 					if maxLvl and maxLvl > 0 then zones[zoneName].high = maxLvl end
 					-- Get map size
 					local zWidth = HBD:GetZoneSize(zoneMapID)
@@ -3125,7 +3403,9 @@ do
 
 	zones = nil
 
-	trace("Tourist: Initialized.")
+	trace("Tourist: Initialized; loaded by "..tostring(addonName))
 
 	PLAYER_LEVEL_UP(Tourist)
 end
+
+return Tourist
