@@ -13,6 +13,7 @@ P['locplus'] = {
 	['both'] = true,
 	['combat'] = false,
 	['timer'] = 0.5,
+	['dig'] = true,
 	['displayOther'] = "RLEVEL",
 	['showicon'] = true,
 	['hidecoords'] = false,
@@ -30,6 +31,7 @@ P['locplus'] = {
 	['ttreczones'] = true,
 	['ttrecinst'] = true,
 	['ttcoords'] = true,
+	['curr'] = true,
 	['prof'] = true,
 	['profcap'] = false,
 -- Filters
@@ -150,6 +152,13 @@ function LP:AddOptions()
 						type = 'toggle',
 						disabled = function() return E.db.locplus.hidecoords end,
 						set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:HideCoords() end,					
+					},
+					dig = {
+						order = 4,
+						name = L["Detailed Coords"],
+						desc = L["Adds 2 digits in the coords"],
+						type = 'toggle',
+						set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:CoordsDigit() end,					
 					},
 					displayOther = {
 						order = 5,
@@ -469,6 +478,14 @@ function LP:AddOptions()
 									t.r, t.g, t.b = r, g, b
 									LP:CoordsColor() 
 								end,
+							},
+							dig = {
+								order = 3,
+								name = L["Detailed Coords"],
+								desc = L["Adds 2 digits in the coords"],
+								type = 'toggle',
+								get = function(info) return E.db.locplus[ info[#info] ] end,
+								set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:CoordsDigit() end,					
 							},
 						},
 					},

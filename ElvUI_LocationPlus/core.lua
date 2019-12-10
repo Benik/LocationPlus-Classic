@@ -29,7 +29,7 @@ if E.db.locplus == nil then E.db.locplus = {} end
 
 local classColor = E.myclass == 'PRIEST' and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass])
 
-local COORDS_WIDTH = 50 -- Coord panels width
+local COORDS_WIDTH = 30 -- Coord panels width
 local SPACING = 1 		-- Panel spacing
 
 local left_dtp = CreateFrame('Frame', 'LeftCoordDtPanel', E.UIParent)
@@ -79,7 +79,18 @@ end
 
 -- Coords Creation
 local function CreateCoords()
-	local x, y = E.MapInfo.xText or 0, E.MapInfo.yText or 0
+	local x, y = E.MapInfo.x or 0, E.MapInfo.y or 0
+
+	local dig
+
+	if E.db.locplus.dig then
+		dig = 2
+	else
+		dig = 0
+	end
+
+	x = x and E:Round(100 * x, dig) or 0
+	y = y and E:Round(100 * y, dig) or 0
 
 	return x, y
 end
@@ -398,6 +409,17 @@ function LP:UpdateCoords()
 	end
 end
 
+-- Coord panels width
+function LP:CoordsDigit()
+	if E.db.locplus.dig then
+		XCoordsPanel:Width(COORDS_WIDTH*1.5)
+		YCoordsPanel:Width(COORDS_WIDTH*1.5)
+	else
+		XCoordsPanel:Width(COORDS_WIDTH)
+		YCoordsPanel:Width(COORDS_WIDTH)
+	end
+end
+
 function LP:CoordsColor()
 	if E.db.locplus.customCoordsColor == 1 then
 		XCoordsPanel.Text:SetTextColor(unpackColor(E.db.locplus.userColor))
@@ -433,6 +455,7 @@ function LP:Update()
 	self:ShadowPanels()
 	self:DTHeight()
 	HideDT()
+	self:CoordsDigit()
 	self:MouseOver()
 	self:HideCoords()
 end
