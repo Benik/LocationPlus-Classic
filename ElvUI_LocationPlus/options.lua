@@ -1,7 +1,7 @@
 local E, L, V, P, G = unpack(ElvUI);
 local LP = E:GetModule('LocationPlus')
 
-local format = string.format
+local format, tinsert = string.format, table.insert
 local SHOW, OTHER, LEVEL_RANGE, PROFESSIONS_FISHING, EMBLEM_SYMBOL, STATUS, CURRENCY, TRADE_SKILLS, FILTERS = SHOW, OTHER, LEVEL_RANGE, PROFESSIONS_FISHING, EMBLEM_SYMBOL, STATUS, CURRENCY, TRADE_SKILLS, FILTERS
 local COLOR, CLASS_COLORS, CUSTOM, COLOR_PICKER = COLOR, CLASS_COLORS, CUSTOM, COLOR_PICKER
 
@@ -62,11 +62,18 @@ P['locplus'] = {
 	['LoginMsg'] = true,
 }
 
+P.datatexts.panels.LocPlusRightDT = {
+	[1] = 'Time',
+}
+P.datatexts.panels.LocPlusLeftDT = {
+	[1] = 'Primary Stat',
+}
+
 local FISH_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\fish.tga:14:14|t"
 local PET_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\pet.tga:14:14|t"
 local LEVEL_ICON = "|TInterface\\AddOns\\ElvUI_LocationPlus\\media\\levelup.tga:14:14|t"
 
-function LP:AddOptions()
+local function Options()
 	E.Options.args.locplus = {
 		order = 9000,
 		type = 'group',
@@ -555,3 +562,4 @@ function LP:AddOptions()
 		},					
 	}
 end
+tinsert(LP.Config, Options)
