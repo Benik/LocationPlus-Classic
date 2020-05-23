@@ -43,6 +43,8 @@ P['locplus'] = {
 	['trans'] = true,
 	['noback'] = true,
 	['ht'] = false,
+	['frameStrata'] = "LOW",
+	['frameLevel'] = 2,
 	['lpwidth'] = 200,
 	['dtwidth'] = 100,
 	['dtheight'] = 21,
@@ -404,15 +406,41 @@ local function Options()
 								disabled = function() return not E.db.locplus.noback end,
 								set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:DTHeight() end,	
 							},
-							lpauto = {
+							frameStrata = {
 								order = 2,
+								type = "select",
+								name = L["Frame Strata"],
+								values = {
+									["BACKGROUND"] = "BACKGROUND",
+									["LOW"] = "LOW",
+									["MEDIUM"] = "MEDIUM",
+									["HIGH"] = "HIGH",
+									["DIALOG"] = "DIALOG",
+									["TOOLTIP"] = "TOOLTIP",
+								},
+								set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:StrataAndLevel() end,	
+							},
+							frameLevel = {
+								order = 3,
+								type = "range",
+								name = L["Frame Level"],
+								min = 2, max = 128, step = 1,
+								set = function(info, value) E.db.locplus[ info[#info] ] = value; LP:StrataAndLevel() end,
+							},
+							spacer1 = {
+								order = 4,
+								type = "header",
+								name = "",
+							},
+							lpauto = {
+								order = 5,
 								type = "toggle",
 								name = L["Auto width"],
 								desc = L["Auto resized Location Panel."],
 								set = function(info, value) E.db.locplus[ info[#info] ] = value; E.db.locplus.trunc = false; end,
 							},	
 							lpwidth = {
-								order = 3,
+								order = 6,
 								type = "range",
 								name = L["Width"],
 								desc = L["Adjust the Location Panel Width."],
@@ -420,14 +448,19 @@ local function Options()
 								disabled = function() return E.db.locplus.lpauto end,
 							},
 							trunc = {
-								order = 4,
+								order = 7,
 								type = "toggle",
 								name = L["Truncate text"],
 								desc = L["Truncates the text rather than auto enlarge the location panel when the text is bigger than the panel."],
 								disabled = function() return E.db.locplus.lpauto end,
 							},
+							spacer2 = {
+								order = 8,
+								type = "header",
+								name = "",
+							},
 							customColor = {
-								order = 5,
+								order = 9,
 								type = "select",
 								name = COLOR,
 								values = {
@@ -437,7 +470,7 @@ local function Options()
 								},
 							},
 							userColor = {
-								order = 6,
+								order = 10,
 								type = "color",
 								name = COLOR_PICKER,
 								disabled = function() return E.db.locplus.customColor == 1 or E.db.locplus.customColor == 2 end,

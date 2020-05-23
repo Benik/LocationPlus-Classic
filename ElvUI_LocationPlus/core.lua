@@ -305,6 +305,12 @@ function LP:TransparentPanels()
 	end
 end
 
+function LP:StrataAndLevel()
+	local db = E.db.locplus
+	LocationPlusPanel:SetFrameStrata(db.frameStrata)
+	LocationPlusPanel:SetFrameLevel(db.frameLevel)
+end
+
 function LP:UpdateLocation()
 	local subZoneText = GetMinimapZoneText() or ""
 	local zoneText = GetRealZoneText() or UNKNOWN;
@@ -440,6 +446,7 @@ function LP:Update()
 	LP:TransparentPanels()
 	LP:ShadowPanels()
 	LP:DTHeight()
+	LP:StrataAndLevel()
 	HideDT()
 	LP:CoordsDigit()
 	LP:MouseOver()
