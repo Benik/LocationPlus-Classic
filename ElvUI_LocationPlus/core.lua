@@ -22,7 +22,7 @@ local GameTooltip = _G['GameTooltip']
 local UNKNOWN = UNKNOWN
 local SANCTUARY_TERRITORY, ARENA, FRIENDLY, HOSTILE, CONTESTED_TERRITORY, COMBAT, AGGRO_WARNING_IN_INSTANCE = SANCTUARY_TERRITORY, ARENA, FRIENDLY, HOSTILE, CONTESTED_TERRITORY, COMBAT, AGGRO_WARNING_IN_INSTANCE
 
--- GLOBALS: LocationPlusPanel, LeftCoordDtPanel, RightCoordDtPanel, XCoordsPanel, YCoordsPanel, CUSTOM_CLASS_COLORS
+-- GLOBALS: LocationPlusPanel, LocPlusLeftDT, LocPlusRightDT, XCoordsPanel, YCoordsPanel, CUSTOM_CLASS_COLORS
 
 LP.version = GetAddOnMetadata("ElvUI_LocationPlus", "Version")
 LP.Config = {}
@@ -100,10 +100,10 @@ local function LocPanel_OnClick(self, btn)
 			edit_box:Insert(message)
 		else
 			if IsControlKeyDown() then
-				LeftCoordDtPanel:SetScript("OnShow", function(self) E.db.locplus.dtshow = true; end)
-				LeftCoordDtPanel:SetScript("OnHide", function(self) E.db.locplus.dtshow = false; end)
-				ToggleFrame(LeftCoordDtPanel)
-				ToggleFrame(RightCoordDtPanel)
+				LocPlusLeftDT:SetScript("OnShow", function(self) E.db.locplus.dtshow = true; end)
+				LocPlusLeftDT:SetScript("OnHide", function(self) E.db.locplus.dtshow = false; end)
+				ToggleFrame(LocPlusLeftDT)
+				ToggleFrame(LocPlusRightDT)
 			else
 				ToggleWorldMap()
 			end
