@@ -1,3 +1,6 @@
+1.05 - Sep 21 2020
+*Missed a rename for left and right dt panels
+
 1.04 - Jul 12 2020
 *Adopt ElvUI DataText changes
 *Added Strata and Level option
